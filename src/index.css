@@ -1,0 +1,90 @@
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===========================
+   DEFAULT LIGHT MODE BODY
+   =========================== */
+body {
+  @apply bg-[#ffe9d6] text-black;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ===========================
+   DARK MODE BODY
+   =========================== */
+.dark body {
+  @apply bg-[#121212] text-white;
+}
+
+/* SMOOTH FADE */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* ===========================
+   GLOBAL WEBSITE SCROLLBAR
+   =========================== */
+::-webkit-scrollbar {
+  width: 11px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2e2e2e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b5b5b5;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d6d6d6;
+}
+
+/* ===========================
+   SIDEBAR SCROLLBAR
+   =========================== */
+.custom-scroll {
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 11px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: #2e2e2e;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #a8a8a8;
+  border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #cecece;
+}
+
+/* ===========================
+   DARK MODE SCROLLBAR
+   =========================== */
+.dark ::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #555;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
