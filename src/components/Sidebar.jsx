@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useSidebar } from "../context/SidebarContext";
+
 import {
-  FaBars,
   FaHome,
   FaBook,
   FaChalkboardTeacher,
@@ -16,7 +17,7 @@ import {
 
 export default function Sidebar() {
   const { pathname } = useLocation();
-  const [open, setOpen] = useState(true);
+  const { isOpen, toggleSidebar } = useSidebar();
 
   const [menu, setMenu] = useState({
     classroom: false,
@@ -32,60 +33,47 @@ export default function Sidebar() {
   return (
     <div
       className={`
-        fixed top-0 left-0
-        h-screen
-        shadow-xl custom-scroll
-        overflow-y-auto
-        z-[200]
-        transition-all duration-500
+        fixed top-0 left-0 h-screen shadow-xl 
+        transition-all duration-500 z-[200] text-white  
 
-        /* LIGHT MODE GRADIENT */
         bg-[radial-gradient(circle_farthest-corner_at_-5.6%_-6.8%,rgba(103,49,145,1)_37.3%,rgba(50,0,129,1)_73.5%)]
-        text-white
+        dark:bg-[linear-gradient(180deg,#000,#0b0b0b,#111)]
 
-        /* DARK MODE */
-        dark:bg-gradient-to-b
-        dark:from-[#000000] dark:via-[#000000] dark:to-[#000000]
-        dark:text-gray-200
-
-        ${open ? "w-64" : "w-20"}
+        ${isOpen ? "w-64" : "w-20"}
       `}
     >
+      {/* HEADER — ALWAYS STICKY */}
+      <div className="sticky top-0 z-[300] flex justify-between items-center p-4 bg-inherit border-b border-purple-400 dark:border-gray-700">
 
-      {/* STICKY HEADER (SCHOOL NAME) */}
-      <div
-        className="
-          sticky top-0 z-[300]
-          flex justify-between items-center
-          p-4 
-          border-b border-purple-400 dark:border-gray-700
-          bg-inherit backdrop-blur-sm
-        "
-      >
-        <h1 className="font-bold text-lg leading-tight">
-          {open ? "JEEVAN ADARSH VIDYALAYA" : "JAV"}
+        <h1 className="font-bold text-lg">
+          {isOpen && "JEEVAN ADARSH VIDYALAYA"}
         </h1>
 
-        <button onClick={() => setOpen(!open)}>
-          <FaBars className="text-xl dark:text-gray-300" />
+        {/* MENU TOGGLE BUTTON */}
+        <button
+          onClick={toggleSidebar}
+          className="flex items-center justify-center w-10 h-10"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 448 512"
+            className="w-7 h-7 text-white"
+            fill="currentColor"
+          >
+            <path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/>
+          </svg>
         </button>
       </div>
 
-      {/* MENU LIST */}
-      <div className="px-3 mt-4 space-y-2">
+      {/* MENU LIST — ONLY THIS PART SCROLLS */}
+      <div className="px-3 mt-2 space-y-2 overflow-y-auto custom-scroll h-[calc(100vh-90px)] pb-20">
 
-        <SidebarLink
-          to="/dashboard"
-          label="Dashboard"
-          icon={<FaHome />}
-          open={open}
-          active={pathname === "/dashboard"}
-        />
+        <SidebarLink to="/dashboard" icon={<FaHome />} label="Dashboard" open={isOpen} active={pathname === "/dashboard"} />
 
         <MenuItem
-          label="Classroom Management"
+          label=" Course Management"
           icon={<FaChalkboardTeacher />}
-          isOpen={open}
+          open={isOpen}
           openMenu={menu.classroom}
           toggle={() => toggleMenu("classroom")}
           items={[{ to: "/create-timetable", label: "Create Time Table" }]}
@@ -94,7 +82,7 @@ export default function Sidebar() {
         <MenuItem
           label="Attendance"
           icon={<FaCalendarAlt />}
-          isOpen={open}
+          open={isOpen}
           openMenu={menu.attendance}
           toggle={() => toggleMenu("attendance")}
           items={[{ to: "/attendance", label: "Attendance" }]}
@@ -103,7 +91,7 @@ export default function Sidebar() {
         <MenuItem
           label="Study Material"
           icon={<FaBook />}
-          isOpen={open}
+          open={isOpen}
           openMenu={menu.study}
           toggle={() => toggleMenu("study")}
           items={[
@@ -115,7 +103,7 @@ export default function Sidebar() {
         <MenuItem
           label="Assignment"
           icon={<FaFileAlt />}
-          isOpen={open}
+          open={isOpen}
           openMenu={menu.assignment}
           toggle={() => toggleMenu("assignment")}
           items={[
@@ -127,104 +115,67 @@ export default function Sidebar() {
         <MenuItem
           label="Examination"
           icon={<FaListUl />}
-          isOpen={open}
+          open={isOpen}
           openMenu={menu.exam}
           toggle={() => toggleMenu("exam")}
           items={[{ to: "/exams", label: "Exam" }]}
         />
 
         <SidebarLink
-          to="/announcements"
-          label="Announcements"
-          icon={<FaBullhorn />}
-          open={open}
-          active={pathname === "/announcements"}
-        />
-
-        <SidebarLink
           to="/admit-card"
-          label="View Admit Card"
           icon={<FaFileAlt />}
-          open={open}
+          label="Admit Card"
+          open={isOpen}
           active={pathname === "/admit-card"}
         />
 
-        <SidebarLink
-          to="/chat"
-          label="Chat App"
-          icon={<FaComments />}
-          open={open}
-          active={pathname === "/chat"}
-        />
+        <SidebarLink to="/announcements" icon={<FaBullhorn />} label="Announcements" open={isOpen} active={pathname === "/announcements"} />
+        <SidebarLink to="/chat" icon={<FaComments />} label="Chat App" open={isOpen} active={pathname === "/chat"} />
+        <SidebarLink to="/settings" icon={<FaCog />} label="Settings" open={isOpen} active={pathname === "/settings"} />
 
-        <SidebarLink
-          to="/settings"
-          label="Settings"
-          icon={<FaCog />}
-          open={open}
-          active={pathname === "/settings"}
-        />
       </div>
     </div>
   );
 }
 
-/* ------------------
- SIDEBAR LINK COMPONENT
-------------------- */
+/* SIDEBAR LINK */
 function SidebarLink({ to, icon, label, open, active }) {
   return (
     <Link
       to={to}
       className={`
-        flex items-center gap-3 p-3 rounded-lg transition-all
-
-        ${
-          active
-            ? "bg-purple-700/60 dark:bg-purple-800/60 text-white"
-            : "hover:bg-purple-700/40 dark:hover:bg-purple-800/40"
-        }
+        flex items-center gap-3 p-3 rounded-lg transition text-white
+        ${active ? "bg-purple-700/60 dark:bg-[#222]" : "hover:bg-purple-700/40 dark:hover:bg-[#1a1a1a]"}
       `}
     >
-      {icon} {open && label}
+      <span className="text-white text-lg">{icon}</span>
+      {open && label}
     </Link>
   );
 }
 
-/* ------------------
- COLLAPSIBLE MENU ITEM
-------------------- */
-function MenuItem({ label, icon, isOpen, openMenu, toggle, items }) {
+/* COLLAPSIBLE MENU */
+function MenuItem({ label, icon, open, openMenu, toggle, items }) {
   return (
     <div>
       <button
         onClick={toggle}
-        className="
-          flex w-full justify-between items-center
-          p-3 rounded-lg
-          hover:bg-purple-700/40 dark:hover:bg-purple-800/40
-          transition
-        "
+        className="flex w-full justify-between items-center p-3 rounded-lg hover:bg-purple-700/40 dark:hover:bg-[#1a1a1a] transition text-white"
       >
         <span className="flex items-center gap-3">
-          {icon} {isOpen && label}
+          <span className="text-white text-lg">{icon}</span>
+          {open && label}
         </span>
 
-        {isOpen && (
-          <FaChevronDown
-            className={`transition ${openMenu ? "rotate-180" : ""}`}
-          />
+        {open && (
+          <FaChevronDown className={`transition text-white ${openMenu ? "rotate-180" : ""}`} />
         )}
       </button>
 
-      {openMenu && isOpen && (
+      {openMenu && open && (
         <div className="ml-10 mt-2 space-y-2 text-sm">
           {items.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="block hover:underline dark:text-gray-300"
-            >
+            <Link key={item.to} to={item.to} className="block hover:underline text-white/90">
               {item.label}
             </Link>
           ))}
@@ -233,4 +184,3 @@ function MenuItem({ label, icon, isOpen, openMenu, toggle, items }) {
     </div>
   );
 }
-

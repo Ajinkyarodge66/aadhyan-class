@@ -6,11 +6,13 @@ export default function Announcements() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // ⭐ Updated Data Structure (course + batch added)
   const [announcements, setAnnouncements] = useState([
     {
       id: 1,
       title: "Holiday Tomorrow 🎉",
-      className: "Nur",
+      course: "Diploma",
+      batch: "Batch A",
       content: "<p>School will remain closed tomorrow.</p>",
       createdOn: "22/09/2025",
       createdBy: "Admin",
@@ -20,7 +22,11 @@ export default function Announcements() {
 
   const [activeAnnouncement, setActiveAnnouncement] = useState(null);
 
-  // 👇 Add newly created announcement received from CreateAnnouncement.jsx
+  // ⭐ Filter States
+  const [filterCourse, setFilterCourse] = useState("");
+  const [filterBatch, setFilterBatch] = useState("");
+
+  // ⭐ Add new announcement from CreateAnnouncement page
   useEffect(() => {
     if (location.state?.newAnnouncement) {
       setAnnouncements((prev) => [...prev, location.state.newAnnouncement]);
@@ -36,8 +42,21 @@ export default function Announcements() {
   const handleView = (announcement) => setActiveAnnouncement(announcement);
   const closeModal = () => setActiveAnnouncement(null);
 
+  // ⭐ FILTER LOGIC
+  const filteredAnnouncements = announcements.filter((a) => {
+    return (
+      (!filterCourse || a.course === filterCourse) &&
+      (!filterBatch || a.batch === filterBatch)
+    );
+  });
+
   return (
-    <div className="w-full px-6 pb-10">
+    <div className="w-full px-6 pb-10 
+      text-gray-900 dark:text-white 
+      bg-white dark:bg-gray-900 
+      min-h-screen">
+
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">View Announcements</h1>
 
@@ -49,14 +68,44 @@ export default function Announcements() {
         </button>
       </div>
 
+      {/* ⭐ FILTERS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <select
+          className="px-3 py-3 rounded-lg bg-white dark:bg-gray-800 border dark:border-gray-700"
+          value={filterCourse}
+          onChange={(e) => setFilterCourse(e.target.value)}
+        >
+          <option value="">Filter by Course</option>
+          <option>Diploma</option>
+          <option>BTech / BE</option>
+          <option>MTech</option>
+        </select>
+
+        <select
+          className="px-3 py-3 rounded-lg bg-white dark:bg-gray-800 border dark:border-gray-700"
+          value={filterBatch}
+          onChange={(e) => setFilterBatch(e.target.value)}
+        >
+          <option value="">Filter by Batch</option>
+          <option>Batch A</option>
+          <option>Batch B</option>
+          <option>Batch C</option>
+        </select>
+      </div>
+
       {/* LIST */}
       <div className="space-y-6">
-        {announcements.map((a) => (
+        {filteredAnnouncements.map((a) => (
           <div
             key={a.id}
             onClick={() => handleView(a)}
-            className="bg-white p-6 rounded-xl shadow cursor-pointer hover:shadow-lg transition relative"
+            className="
+              p-6 rounded-xl shadow cursor-pointer transition relative
+              bg-white dark:bg-gray-800 
+              hover:shadow-lg dark:hover:shadow-gray-700
+            "
           >
+            {/* DELETE BUTTON */}
             <span className="absolute right-6 top-6 text-red-600 text-xl hover:text-red-800">
               <FaTrash
                 onClick={(e) => {
@@ -66,18 +115,26 @@ export default function Announcements() {
               />
             </span>
 
-            <span className="bg-blue-200 text-blue-700 px-4 py-1 rounded-lg font-semibold">
-              {a.className}
+            {/* ⭐ COURSE BADGE */}
+            <span className="
+              px-4 py-1 rounded-lg font-semibold text-sm
+              bg-blue-200 text-blue-700 
+              dark:bg-blue-900 dark:text-blue-200
+            ">
+              {a.course} • {a.batch}
             </span>
 
+            {/* TITLE */}
             <h2 className="text-xl font-bold mt-3">{a.title}</h2>
 
+            {/* CONTENT */}
             <div
-              className="text-gray-600 mt-2"
+              className="mt-2 text-gray-700 dark:text-gray-300"
               dangerouslySetInnerHTML={{ __html: a.content }}
             />
 
-            <div className="mt-4 text-sm text-gray-700 space-y-1">
+            {/* FOOTER */}
+            <div className="mt-4 text-sm space-y-1 text-gray-700 dark:text-gray-300">
               <p><strong>Created On:</strong> {a.createdOn}</p>
               <p><strong>Created By:</strong> {a.createdBy}</p>
               <p><strong>Created For:</strong> {a.createdFor}</p>
@@ -86,26 +143,30 @@ export default function Announcements() {
         ))}
       </div>
 
-      {/* VIEW POPUP */}
+      {/* POPUP */}
       {activeAnnouncement && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-          <div className="bg-white w-96 p-6 rounded-xl shadow-xl">
-
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+          <div className="
+            bg-white dark:bg-gray-800 
+            text-gray-900 dark:text-white 
+            w-96 p-6 rounded-xl shadow-xl
+          ">
             <h2 className="text-2xl font-bold mb-3">{activeAnnouncement.title}</h2>
 
             <div
-              className="text-gray-700 mb-4"
+              className="text-gray-700 dark:text-gray-300 mb-4"
               dangerouslySetInnerHTML={{ __html: activeAnnouncement.content }}
             />
 
-            <p><strong>Class:</strong> {activeAnnouncement.className}</p>
+            <p><strong>Course:</strong> {activeAnnouncement.course}</p>
+            <p><strong>Batch:</strong> {activeAnnouncement.batch}</p>
             <p><strong>Created On:</strong> {activeAnnouncement.createdOn}</p>
             <p><strong>Created By:</strong> {activeAnnouncement.createdBy}</p>
             <p><strong>Created For:</strong> {activeAnnouncement.createdFor}</p>
 
             <button
               onClick={closeModal}
-              className="mt-5 w-full bg-teal-600 text-white py-2 rounded-lg"
+              className="mt-5 w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700"
             >
               Close
             </button>
@@ -115,3 +176,4 @@ export default function Announcements() {
     </div>
   );
 }
+

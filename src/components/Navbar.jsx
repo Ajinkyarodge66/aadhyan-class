@@ -6,18 +6,14 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState(false);
 
-  // DARK MODE LOGIC
   const [dark, setDark] = useState(
     localStorage.getItem("theme") === "dark"
   );
 
   const [scrolled, setScrolled] = useState(false);
 
-  // Detect scroll for shadow effect
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -37,48 +33,38 @@ export default function Navbar() {
       className={`
         w-full flex justify-between items-center 
         px-8 py-4 
-        bg-white/70 dark:bg-[#111]/70
-        backdrop-blur-lg
+        bg-white/70 dark:bg-[#111]/70 backdrop-blur-lg
         border-b border-gray-300 dark:border-gray-800
         transition-all duration-300
-
-        sticky top-0 z-[100]    /* 🔥 IMPORTANT: MAKES NAVBAR STICKY */
-
+        sticky top-0 z-[100]
         ${scrolled ? "shadow-lg dark:shadow-gray-900/40" : "shadow-sm"}
       `}
     >
-      {/* LEFT – TITLE */}
-      <h2 className="
-        text-2xl font-semibold 
-        text-gray-800 dark:text-gray-200
-        tracking-wide
-      ">
-        Wims Teacher Panel
-      </h2>
+
+      {/* LEFT SIDE → Title Only (Hamburger Removed ✔) */}
+      <div className="flex items-center gap-4">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+          Wims Teacher Panel
+        </h2>
+      </div>
 
       {/* RIGHT SIDE */}
       <div className="flex items-center gap-5">
-
-        {/* DARK MODE BUTTON */}
         <button
           onClick={() => setDark(!dark)}
-          className="
-            text-xl p-2 rounded-full
-            bg-gray-200 dark:bg-gray-700
-            text-gray-900 dark:text-gray-100
-            hover:scale-110 hover:rotate-12
-            transition-all duration-300
-          "
+          className="text-xl p-2 rounded-full
+          bg-gray-200 dark:bg-gray-700
+          text-gray-900 dark:text-gray-100
+          hover:scale-110 transition"
         >
           {dark ? <BsSun /> : <BsMoon />}
         </button>
 
-        {/* PROFILE + DROPDOWN */}
         <div
           className="relative flex items-center gap-3 cursor-pointer"
           onClick={() => setOpenDropdown(!openDropdown)}
         >
-          <p className="text-gray-700 dark:text-gray-200 font-medium">
+          <p className="text-gray-700 dark:text-gray-200">
             Welcome, ROSHNI !
           </p>
 
@@ -90,23 +76,19 @@ export default function Navbar() {
 
           {openDropdown && (
             <div
-              className="
-                absolute right-0 top-12 
-                bg-white dark:bg-[#1a1a1a] 
-                w-48 rounded-xl shadow-xl border dark:border-gray-700 
-                animate-fadeIn z-50
-              "
+              className="absolute right-0 top-12 bg-white dark:bg-[#1a1a1a]
+              w-48 rounded-xl shadow-xl border dark:border-gray-700 p-1"
             >
               <button
-                onClick={() => { navigate("/profile"); setOpenDropdown(false); }}
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-gray-200"
+                onClick={() => navigate("/profile")}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 Profile
               </button>
 
               <button
-                onClick={() => { navigate("/settings"); setOpenDropdown(false); }}
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-gray-200"
+                onClick={() => navigate("/settings")}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 Settings
               </button>
@@ -115,9 +97,8 @@ export default function Navbar() {
                 onClick={() => {
                   localStorage.removeItem("isLoggedIn");
                   navigate("/login");
-                  setOpenDropdown(false);
                 }}
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-red-600"
+                className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 Logout
               </button>

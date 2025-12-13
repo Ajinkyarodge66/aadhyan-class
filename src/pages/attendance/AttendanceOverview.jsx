@@ -19,143 +19,152 @@ export default function AttendanceOverview() {
   const [selectedSection, setSelectedSection] = useState("");
   const [chartData, setChartData] = useState(null);
 
+  const [presentTotal, setPresentTotal] = useState(0);
+  const [absentTotal, setAbsentTotal] = useState(0);
+
+  // ⭐ REAL-TIME DARK MODE DETECTION  
+  const [isDark, setIsDark] = useState(
+    document.documentElement.classList.contains("dark")
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // ⭐ Chart Options (updates when theme changes)
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        labels: { color: isDark ? "#fff" : "#000" },
+      },
+    },
+    scales: {
+      x: {
+        ticks: { color: isDark ? "#fff" : "#000" },
+        grid: { color: isDark ? "#555" : "#ddd" },
+      },
+      y: {
+        ticks: { color: isDark ? "#fff" : "#000" },
+        grid: { color: isDark ? "#555" : "#ddd" },
+      },
+    },
+  };
+
+  // ⭐ Load data when filters change
   useEffect(() => {
     if (!selectedClass || !selectedSection) return;
 
     const key = selectedClass + selectedSection;
     const data = attendanceDB[key];
-    if (!data) return;
+    if (!data) return setChartData(null);
 
-    let dataset;
+    let labels = [];
+    let presentArr = [];
+    let absentArr = [];
 
     if (filter === "day") {
-      dataset = {
-        labels: data.dayWise.map((d) => d.day),
-        datasets: [
-          {
-            label: "Present",
-            data: data.dayWise.map((d) => d.present),
-            backgroundColor: "#4ade80",
-          },
-          {
-            label: "Absent",
-            data: data.dayWise.map((d) => d.absent),
-            backgroundColor: "#f87171",
-          },
-        ],
-      };
+      labels = data.dayWise.map((d) => d.day);
+      presentArr = data.dayWise.map((d) => d.present);
+      absentArr = data.dayWise.map((d) => d.absent);
+    } else if (filter === "month") {
+      labels = data.monthWise.map((d) => d.month);
+      presentArr = data.monthWise.map((d) => d.present);
+      absentArr = data.monthWise.map((d) => d.absent);
+    } else {
+      labels = data.yearWise.map((d) => d.year);
+      presentArr = data.yearWise.map((d) => d.present);
+      absentArr = data.yearWise.map((d) => d.absent);
     }
 
-    if (filter === "month") {
-      dataset = {
-        labels: data.monthWise.map((d) => d.month),
-        datasets: [
-          {
-            label: "Present",
-            data: data.monthWise.map((d) => d.present),
-            backgroundColor: "#60a5fa",
-          },
-          {
-            label: "Absent",
-            data: data.monthWise.map((d) => d.absent),
-            backgroundColor: "#fbbf24",
-          },
-        ],
-      };
-    }
+    setPresentTotal(presentArr.reduce((a, b) => a + b, 0));
+    setAbsentTotal(absentArr.reduce((a, b) => a + b, 0));
 
-    if (filter === "year") {
-      dataset = {
-        labels: data.yearWise.map((d) => d.year),
-        datasets: [
-          {
-            label: "Present",
-            data: data.yearWise.map((d) => d.present),
-            backgroundColor: "#a78bfa",
-          },
-          {
-            label: "Absent",
-            data: data.yearWise.map((d) => d.absent),
-            backgroundColor: "#fb7185",
-          },
-        ],
-      };
-    }
-
-    setChartData(dataset);
-  }, [filter, selectedClass, selectedSection]);
+    setChartData({
+      labels,
+      datasets: [
+        {
+          label: "Present",
+          data: presentArr,
+          backgroundColor: isDark ? "#22c55e" : "#4ade80",
+        },
+        {
+          label: "Absent",
+          data: absentArr,
+          backgroundColor: isDark ? "#f43f5e" : "#f87171",
+        },
+      ],
+    });
+  }, [filter, selectedClass, selectedSection, isDark]);
 
   return (
-    <>
-      <div className="flex flex-col gap-8">
+    <div className="p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-xl shadow">
 
-        {/* FILTER BUTTONS */}
-        <div className="flex justify-center gap-6 mt-4 text-lg font-medium">
-          <button
-            className={`px-4 py-2 rounded-lg ${
-              filter === "day" ? "bg-blue-600 text-white" : "bg-gray-300"
-            }`}
-            onClick={() => setFilter("day")}
-          >
-            Day Wise
-          </button>
+      {/* FILTERS */}
+      <div className="flex flex-wrap gap-4 mb-6">
+        <select
+          value={selectedClass}
+          onChange={(e) => setSelectedClass(e.target.value)}
+          className="border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+        >
+          <option value="">Select Course</option>
+          <option value="Diploma">Diploma</option>
+          <option value="BTechBE">BTech / BE</option>
+          <option value="MTech">MTech</option>
+        </select>
 
-          <button
-            className={`px-4 py-2 rounded-lg ${
-              filter === "month" ? "bg-blue-600 text-white" : "bg-gray-300"
-            }`}
-            onClick={() => setFilter("month")}
-          >
-            Month Wise
-          </button>
+        <select
+          value={selectedSection}
+          onChange={(e) => setSelectedSection(e.target.value)}
+          className="border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+        >
+          <option value="">Select Batch</option>
+          <option value="A">Batch A</option>
+          <option value="B">Batch B</option>
+          <option value="C">Batch C</option>
+        </select>
 
-          <button
-            className={`px-4 py-2 rounded-lg ${
-              filter === "year" ? "bg-blue-600 text-white" : "bg-gray-300"
-            }`}
-            onClick={() => setFilter("year")}
-          >
-            Year Wise
-          </button>
-        </div>
-
-        {/* SELECT CLASS + SECTION */}
-        <div className="flex gap-6 justify-center">
-          <select
-            className="px-4 py-3 border rounded-lg"
-            value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
-          >
-            <option value="">Select Class</option>
-            <option value="8">Class 8</option>
-            <option value="9">Class 9</option>
-            <option value="10">Class 10</option>
-          </select>
-
-          <select
-            className="px-4 py-3 border rounded-lg"
-            value={selectedSection}
-            onChange={(e) => setSelectedSection(e.target.value)}
-          >
-            <option value="">Select Section</option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-          </select>
-        </div>
-
-        {/* GRAPH */}
-        <div className="bg-white shadow-xl rounded-2xl p-10 w-[92%] mx-auto">
-          <h2 className="text-center text-xl font-semibold mb-8">
-            Attendance Overview ({filter.toUpperCase()})
-          </h2>
-
-          {chartData ? (
-            <Bar data={chartData} />
-          ) : (
-            <p className="text-center text-gray-500">Select Class & Section</p>
-          )}
-        </div>
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+        >
+          <option value="day">Day Wise</option>
+          <option value="month">Month Wise</option>
+          <option value="year">Year Wise</option>
+        </select>
       </div>
-    </>
+
+      {/* PRESENT & ABSENT COUNTERS */}
+      {chartData && (
+        <div className="flex gap-6 mb-4 text-lg font-semibold">
+          <p className={isDark ? "text-green-400" : "text-green-600"}>
+            Present: {presentTotal}
+          </p>
+          <p className={isDark ? "text-red-400" : "text-red-600"}>
+            Absent: {absentTotal}
+          </p>
+        </div>
+      )}
+
+      {/* CHART */}
+      <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+        {chartData ? (
+          <Bar data={chartData} options={chartOptions} />
+        ) : (
+          "Select course & batch to view attendance."
+        )}
+      </div>
+    </div>
   );
 }
+

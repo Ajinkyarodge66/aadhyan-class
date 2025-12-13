@@ -1,14 +1,14 @@
 import { useState } from "react";
 
 export default function CreateAssignment() {
-  const classes = ["Nur", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-  const sections = ["A", "B", "C"];
-  const subjects = ["Hindi", "English", "Maths", "Science", "EVS"];
+  const courses = ["Diploma", "BTech / BE", "MTech"];
+  const batches = ["Batch 2024", "Batch 2025", "Morning Batch", "Evening Batch"];
+  const branches = ["CSE", "ME", "CE"];
 
   const [form, setForm] = useState({
-    className: "",
-    section: "",
-    subject: "",
+    course: "",
+    batch: "",
+    branch: "",
     files: null,
     creationDate: "",
     submissionDate: "",
@@ -17,15 +17,33 @@ export default function CreateAssignment() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Assignment Data:", form);
+
+    // 📌 Existing Assignments load करा
+    const oldAssignments = JSON.parse(localStorage.getItem("assignments")) || [];
+
+    // 📌 New Assignment तयार करा
+    const newAssignment = {
+      ...form,
+      id: Date.now(),
+      fileName: form.files?.[0]?.name || "No File",
+      status: form.files ? "Submitted" : "Not Submitted"
+    };
+
+    // 📌 Save to LocalStorage
+    localStorage.setItem(
+      "assignments",
+      JSON.stringify([...oldAssignments, newAssignment])
+    );
+
     alert("Assignment Created Successfully!");
+    resetForm();
   };
 
   const resetForm = () => {
     setForm({
-      className: "",
-      section: "",
-      subject: "",
+      course: "",
+      batch: "",
+      branch: "",
       files: null,
       creationDate: "",
       submissionDate: "",
@@ -34,62 +52,55 @@ export default function CreateAssignment() {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-r from-orange-300 to-yellow-200 rounded-xl shadow-xl">
-
+    <div className="p-6 rounded-xl shadow-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       <h2 className="text-center text-3xl font-bold mb-6">Create Assignment</h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
-        {/* CLASS - SECTION - SUBJECT */}
+        {/* COURSE - BATCH - BRANCH */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-          {/* CLASS */}
+          {/* COURSE */}
           <div>
-            <label className="font-semibold">Class:</label>
+            <label className="font-semibold">Course:</label>
             <select
-              value={form.className}
-              onChange={(e) => setForm({ ...form, className: e.target.value })}
-              className="w-full mt-1 p-3 border rounded-lg bg-white"
+              value={form.course}
+              onChange={(e) => setForm({ ...form, course: e.target.value })}
+              className="w-full mt-1 p-3 border rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-300 dark:border-gray-600"
             >
-              <option value="">Select Class</option>
-              {classes.map((cls) => (
-                <option key={cls} value={cls}>
-                  {cls}
-                </option>
+              <option value="">Select Course</option>
+              {courses.map((c) => (
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
           </div>
 
-          {/* SECTION */}
+          {/* BATCH */}
           <div>
-            <label className="font-semibold">Section:</label>
+            <label className="font-semibold">Batch:</label>
             <select
-              value={form.section}
-              onChange={(e) => setForm({ ...form, section: e.target.value })}
-              className="w-full mt-1 p-3 border rounded-lg bg-white"
+              value={form.batch}
+              onChange={(e) => setForm({ ...form, batch: e.target.value })}
+              className="w-full mt-1 p-3 border rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-300 dark:border-gray-600"
             >
-              <option value="">Select Section</option>
-              {sections.map((sec) => (
-                <option key={sec} value={sec}>
-                  {sec}
-                </option>
+              <option value="">Select Batch</option>
+              {batches.map((b) => (
+                <option key={b} value={b}>{b}</option>
               ))}
             </select>
           </div>
 
-          {/* SUBJECT */}
+          {/* BRANCH */}
           <div>
-            <label className="font-semibold">Subject:</label>
+            <label className="font-semibold">Branch:</label>
             <select
-              value={form.subject}
-              onChange={(e) => setForm({ ...form, subject: e.target.value })}
-              className="w-full mt-1 p-3 border rounded-lg bg-white"
+              value={form.branch}
+              onChange={(e) => setForm({ ...form, branch: e.target.value })}
+              className="w-full mt-1 p-3 border rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-300 dark:border-gray-600"
             >
-              <option value="">Select Subject</option>
-              {subjects.map((sub) => (
-                <option key={sub} value={sub}>
-                  {sub}
-                </option>
+              <option value="">Select Branch</option>
+              {branches.map((br) => (
+                <option key={br} value={br}>{br}</option>
               ))}
             </select>
           </div>
@@ -98,34 +109,28 @@ export default function CreateAssignment() {
 
         {/* FILE UPLOAD */}
         <div>
-          <label className="font-semibold">
-            Upload Files (PDF, JPEG, PNG, JPG):
-          </label>
+          <label className="font-semibold">Upload Files:</label>
           <input
             type="file"
             multiple
             onChange={(e) => setForm({ ...form, files: e.target.files })}
-            className="w-full mt-1 p-3 border rounded-lg bg-white"
+            className="w-full mt-1 p-3 border rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-300 dark:border-gray-600"
           />
         </div>
 
-        {/* CREATION + SUBMISSION DATE */}
+        {/* DATES */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          {/* Creation Date */}
           <div>
             <label className="font-semibold">Creation Date:</label>
             <input
               type="date"
               value={form.creationDate}
-              onChange={(e) =>
-                setForm({ ...form, creationDate: e.target.value })
-              }
-              className="w-full mt-1 p-3 border rounded-lg bg-white"
+              onChange={(e) => setForm({ ...form, creationDate: e.target.value })}
+              className="w-full mt-1 p-3 border rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-300 dark:border-gray-600"
             />
           </div>
 
-          {/* Submission Date */}
           <div>
             <label className="font-semibold">Submission Date:</label>
             <input
@@ -134,7 +139,7 @@ export default function CreateAssignment() {
               onChange={(e) =>
                 setForm({ ...form, submissionDate: e.target.value })
               }
-              className="w-full mt-1 p-3 border rounded-lg bg-white"
+              className="w-full mt-1 p-3 border rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-300 dark:border-gray-600"
             />
           </div>
 
@@ -146,29 +151,25 @@ export default function CreateAssignment() {
           <textarea
             value={form.details}
             onChange={(e) => setForm({ ...form, details: e.target.value })}
-            className="w-full mt-1 p-3 border rounded-lg bg-white"
             rows="4"
             placeholder="Write assignment instructions..."
-          ></textarea>
+            className="w-full mt-1 p-3 border rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-300 dark:border-gray-600"
+          />
         </div>
 
         {/* BUTTONS */}
         <div className="flex justify-center gap-6 mt-4">
-          <button
-            type="submit"
-            className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold shadow-md hover:bg-green-700"
-          >
+          <button type="submit"
+            className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold">
             CREATE ASSIGNMENT
           </button>
 
-          <button
-            type="button"
-            onClick={resetForm}
-            className="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold shadow-md hover:bg-red-700"
-          >
+          <button type="button" onClick={resetForm}
+            className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold">
             RESET
           </button>
         </div>
+
       </form>
     </div>
   );

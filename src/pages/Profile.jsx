@@ -2,7 +2,7 @@ import PageWrapper from "../components/PageWrapper";
 
 export default function Profile() {
   return (
-    <PageWrapper title="Profile Details">
+   <>
       <div className="
         max-w-3xl mx-auto p-8 rounded-2xl shadow-xl 
         bg-gradient-to-b from-orange-200 to-yellow-100
@@ -47,6 +47,6 @@ export default function Profile() {
           </button>
         </div>
       </div>
-    </PageWrapper>
+    </>
   );
 }

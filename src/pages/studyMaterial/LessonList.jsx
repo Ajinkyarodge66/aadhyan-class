@@ -4,17 +4,17 @@ import axios from "axios";
 export default function LessonList() {
   const [lessons, setLessons] = useState([]);
   const [search, setSearch] = useState("");
-  const [filterClass, setFilterClass] = useState("");
+  const [filterCourse, setFilterCourse] = useState("");
   const [loading, setLoading] = useState(true);
 
   const [formMode, setFormMode] = useState(""); // "view" | "edit" | "add"
   const [activeLesson, setActiveLesson] = useState(null);
 
-  const API = "http://localhost:5000/api/lessons"; // 🔥 CHANGE according to backend
+  const API = "http://localhost:5000/api/lessons"; // backend URL
 
-  // -------------------------------------------------------------------
-  // 🔥 FETCH Lessons from Backend
-  // -------------------------------------------------------------------
+  // --------------------------------------------------
+  // FETCH Lessons
+  // --------------------------------------------------
   const loadLessons = async () => {
     try {
       setLoading(true);
@@ -31,26 +31,26 @@ export default function LessonList() {
     loadLessons();
   }, []);
 
-  // 🔥 UNIQUE class names from backend
-  const classOptions = useMemo(() => {
-    const set = new Set(lessons.map((l) => l.class));
+  // UNIQUE Courses
+  const courseOptions = useMemo(() => {
+    const set = new Set(lessons.map((l) => l.course));
     return Array.from(set);
   }, [lessons]);
 
-  // 🔥 SEARCH + FILTER LOGIC
+  // SEARCH + FILTER
   const filtered = lessons.filter((l) => {
-    const matchClass = filterClass === "" || l.class === filterClass;
+    const matchCourse = filterCourse === "" || l.course === filterCourse;
     const s = search.toLowerCase();
     const matchText =
-      l.name.toLowerCase().includes(s) || l.content.toLowerCase().includes(s);
-    return matchClass && matchText;
+      l.name.toLowerCase().includes(s) ||
+      l.content.toLowerCase().includes(s) ||
+      l.branch.toLowerCase().includes(s);
+    return matchCourse && matchText;
   });
 
-  // -------------------------------------------------------------------
-  // 🔥 CRUD FUNCTIONS
-  // -------------------------------------------------------------------
-
-  // ADD or UPDATE lesson
+  // --------------------------------------------------
+  // CRUD
+  // --------------------------------------------------
   const saveLesson = async () => {
     try {
       if (formMode === "add") {
@@ -58,7 +58,6 @@ export default function LessonList() {
       } else if (formMode === "edit") {
         await axios.put(`${API}/${activeLesson.id}`, activeLesson);
       }
-
       setFormMode("");
       loadLessons();
     } catch (err) {
@@ -67,10 +66,8 @@ export default function LessonList() {
     }
   };
 
-  // DELETE
   const handleDelete = async (id) => {
     if (!confirm("Delete this lesson?")) return;
-
     try {
       await axios.delete(`${API}/${id}`);
       loadLessons();
@@ -78,8 +75,6 @@ export default function LessonList() {
       alert("Delete failed!");
     }
   };
-
-  // -------------------------------------------------------------------
 
   if (loading)
     return (
@@ -90,7 +85,7 @@ export default function LessonList() {
 
   return (
     <div>
-      {/* Search + Add Button */}
+      {/* Search + Add */}
       <div className="flex justify-between items-center mb-6">
         <input
           type="text"
@@ -102,7 +97,7 @@ export default function LessonList() {
 
         <button
           onClick={() => {
-            setActiveLesson({ name: "", class: "", content: "" });
+            setActiveLesson({ name: "", course: "", branch: "", content: "" });
             setFormMode("add");
           }}
           className="bg-teal-600 text-white px-6 py-2 rounded-lg font-semibold"
@@ -111,38 +106,39 @@ export default function LessonList() {
         </button>
       </div>
 
-      {/* Class Filter */}
+      {/* Course Filter */}
       <div className="mb-4 flex items-center gap-3">
         <select
-          className="border rounded-lg px-4 py-2 w-52"
-          value={filterClass}
-          onChange={(e) => setFilterClass(e.target.value)}
+          className="border rounded-lg px-4 py-2 w-60"
+          value={filterCourse}
+          onChange={(e) => setFilterCourse(e.target.value)}
         >
-          <option value="">All Classes</option>
-          {classOptions.map((cls) => (
-            <option key={cls} value={cls}>
-              {cls}
+          <option value="">All Courses</option>
+          {courseOptions.map((c) => (
+            <option key={c} value={c}>
+              {c}
             </option>
           ))}
         </select>
 
-        {filterClass && (
+        {filterCourse && (
           <button
-            onClick={() => setFilterClass("")}
+            onClick={() => setFilterCourse("")}
             className="text-sm underline text-blue-600"
           >
-            Clear Filter ({filterClass})
+            Clear Filter ({filterCourse})
           </button>
         )}
       </div>
 
-      {/* Table */}
+      {/* TABLE */}
       <div className="overflow-x-auto bg-white shadow rounded-lg">
         <table className="w-full">
           <thead>
             <tr className="bg-teal-700 text-white text-left">
               <th className="p-3">Lesson Name</th>
-              <th className="p-3">Class</th>
+              <th className="p-3">Course</th>
+              <th className="p-3">Branch</th>
               <th className="p-3">Content</th>
               <th className="p-3">Action</th>
             </tr>
@@ -151,7 +147,7 @@ export default function LessonList() {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={4} className="p-4 text-center text-gray-500">
+                <td colSpan={5} className="p-4 text-center text-gray-500">
                   No lessons found.
                 </td>
               </tr>
@@ -162,11 +158,12 @@ export default function LessonList() {
 
                   <td
                     className="p-3 text-blue-700 underline cursor-pointer"
-                    onClick={() => setFilterClass(l.class)}
+                    onClick={() => setFilterCourse(l.course)}
                   >
-                    {l.class}
+                    {l.course}
                   </td>
 
+                  <td className="p-3">{l.branch}</td>
                   <td className="p-3">{l.content}</td>
 
                   <td className="p-3 flex gap-2">
@@ -204,7 +201,7 @@ export default function LessonList() {
         </table>
       </div>
 
-      {/* VIEW / EDIT / ADD Modal */}
+      {/* VIEW / EDIT / ADD MODAL */}
       {formMode !== "" && activeLesson && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
           <div className="bg-white w-96 p-6 rounded-lg shadow-xl">
@@ -222,13 +219,23 @@ export default function LessonList() {
               }
             />
 
-            <label className="font-medium">Class</label>
+            <label className="font-medium">Course</label>
             <input
               disabled={formMode === "view"}
               className="border w-full px-3 py-2 rounded mb-3"
-              value={activeLesson.class}
+              value={activeLesson.course}
               onChange={(e) =>
-                setActiveLesson({ ...activeLesson, class: e.target.value })
+                setActiveLesson({ ...activeLesson, course: e.target.value })
+              }
+            />
+
+            <label className="font-medium">Branch</label>
+            <input
+              disabled={formMode === "view"}
+              className="border w-full px-3 py-2 rounded mb-3"
+              value={activeLesson.branch}
+              onChange={(e) =>
+                setActiveLesson({ ...activeLesson, branch: e.target.value })
               }
             />
 
@@ -265,4 +272,3 @@ export default function LessonList() {
     </div>
   );
 }
-
