@@ -6,6 +6,9 @@ export default function Announcements() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // ⭐ Info Modal State
+  const [openInfo, setOpenInfo] = useState(false);
+
   // ⭐ Updated Data Structure (course + batch added)
   const [announcements, setAnnouncements] = useState([
     {
@@ -22,7 +25,7 @@ export default function Announcements() {
 
   const [activeAnnouncement, setActiveAnnouncement] = useState(null);
 
-  // ⭐ Filter States
+  // ⭐ Filters
   const [filterCourse, setFilterCourse] = useState("");
   const [filterBatch, setFilterBatch] = useState("");
 
@@ -56,16 +59,29 @@ export default function Announcements() {
       bg-white dark:bg-gray-900 
       min-h-screen">
 
-      {/* HEADER */}
+      {/* HEADER + I BUTTON */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">View Announcements</h1>
 
-        <button
-          onClick={() => navigate("/create-announcement")}
-          className="bg-teal-600 text-white px-6 py-3 rounded-lg shadow font-semibold hover:bg-teal-700"
-        >
-          Create Announcement
-        </button>
+        <div className="flex items-center gap-3">
+          
+          {/* ⭐ i-Button */}
+          <button
+            onClick={() => setOpenInfo(true)}
+            className="w-10 h-10 flex items-center justify-center rounded-full
+                       bg-gradient-to-br from-blue-600 to-blue-700
+                       text-white text-xl font-bold shadow hover:scale-110 transition"
+          >
+            ℹ️
+          </button>
+
+          <button
+            onClick={() => navigate("/create-announcement")}
+            className="bg-teal-600 text-white px-6 py-3 rounded-lg shadow font-semibold hover:bg-teal-700"
+          >
+            Create Announcement
+          </button>
+        </div>
       </div>
 
       {/* ⭐ FILTERS */}
@@ -115,7 +131,7 @@ export default function Announcements() {
               />
             </span>
 
-            {/* ⭐ COURSE BADGE */}
+            {/* COURSE BADGE */}
             <span className="
               px-4 py-1 rounded-lg font-semibold text-sm
               bg-blue-200 text-blue-700 
@@ -124,16 +140,13 @@ export default function Announcements() {
               {a.course} • {a.batch}
             </span>
 
-            {/* TITLE */}
             <h2 className="text-xl font-bold mt-3">{a.title}</h2>
 
-            {/* CONTENT */}
             <div
               className="mt-2 text-gray-700 dark:text-gray-300"
               dangerouslySetInnerHTML={{ __html: a.content }}
             />
 
-            {/* FOOTER */}
             <div className="mt-4 text-sm space-y-1 text-gray-700 dark:text-gray-300">
               <p><strong>Created On:</strong> {a.createdOn}</p>
               <p><strong>Created By:</strong> {a.createdBy}</p>
@@ -143,7 +156,7 @@ export default function Announcements() {
         ))}
       </div>
 
-      {/* POPUP */}
+      {/* ANNOUNCEMENT VIEW POPUP */}
       {activeAnnouncement && (
         <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
           <div className="
@@ -173,7 +186,43 @@ export default function Announcements() {
           </div>
         </div>
       )}
+
+      {/* ⭐ HELP MODAL */}
+      {openInfo && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+
+          <div className="bg-white dark:bg-[#140028] text-black dark:text-white 
+                          w-[90%] max-w-lg p-6 rounded-2xl shadow-xl 
+                          animate-modalSlideUp border dark:border-gray-700">
+
+            <h2 className="text-2xl font-bold text-blue-600 dark:text-blue-300 mb-4">
+              How to Use Announcements Module
+            </h2>
+
+            <div className="space-y-3 text-gray-700 dark:text-gray-300">
+              <p>📌 This module helps Admin/Teachers to publish important updates.</p>
+
+              <p><b>1️⃣ Create Announcement:</b> Click “Create Announcement”.</p>
+              <p><b>2️⃣ Add Title + Content:</b> Description, message, instructions.</p>
+              <p><b>3️⃣ Select Course & Batch:</b> Students will be filtered.</p>
+              <p><b>4️⃣ Students View:</b> Only their course-batch announcements.</p>
+              <p><b>5️⃣ Delete Option:</b> Remove wrong updates anytime.</p>
+            </div>
+
+            <button
+              onClick={() => setOpenInfo(false)}
+              className="mt-6 w-full bg-blue-600 hover:bg-blue-700 
+                        text-white py-2 rounded-lg shadow-md"
+            >
+              Close
+            </button>
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 }
+
 

@@ -17,47 +17,16 @@ export default function AdmitCard() {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
 
-  // 🔥 Dummy Student DB (Filter will work)
+  // ⭐ Added: Help Modal State
+  const [openInfo, setOpenInfo] = useState(false);
+
   const allStudents = [
-    {
-      course: "Diploma",
-      batch: "Batch A",
-      name: "Roshni Patil",
-      roll: "12",
-      admission: "A1102",
-      father: "Anil Patil",
-      mobile: "9876543210",
-    },
-    {
-      course: "Diploma",
-      batch: "Batch B",
-      name: "Ganesh More",
-      roll: "8",
-      admission: "B2210",
-      father: "Suresh More",
-      mobile: "9871112222",
-    },
-    {
-      course: "BTech / BE",
-      batch: "Batch A",
-      name: "Vaishnavi Shinde",
-      roll: "5",
-      admission: "BT331",
-      father: "Prakash Shinde",
-      mobile: "9872233445",
-    },
-    {
-      course: "MTech",
-      batch: "Batch C",
-      name: "Sagar Jadhav",
-      roll: "3",
-      admission: "MT998",
-      father: "Mahesh Jadhav",
-      mobile: "9765432109",
-    },
+    { course: "Diploma", batch: "Batch A", name: "Roshni Patil", roll: "12", admission: "A1102", father: "Anil Patil", mobile: "9876543210" },
+    { course: "Diploma", batch: "Batch B", name: "Ganesh More", roll: "8", admission: "B2210", father: "Suresh More", mobile: "9871112222" },
+    { course: "BTech / BE", batch: "Batch A", name: "Vaishnavi Shinde", roll: "5", admission: "BT331", father: "Prakash Shinde", mobile: "9872233445" },
+    { course: "MTech", batch: "Batch C", name: "Sagar Jadhav", roll: "3", admission: "MT998", father: "Mahesh Jadhav", mobile: "9765432109" },
   ];
 
-  // ⭐ GET DETAILS CLICK → Filter Students
   const handleGetDetails = () => {
     if (!examType || !subExam || !course || !batch) {
       alert("Please select all fields!");
@@ -93,6 +62,19 @@ export default function AdmitCard() {
   return (
     <div className="flex flex-col gap-6 dark:text-white">
 
+      {/* ⭐ TOP RIGHT i-button */}
+      <div className="flex justify-end">
+        <button
+          onClick={() => setOpenInfo(true)}
+          className="w-10 h-10 flex items-center justify-center rounded-full 
+                     bg-gradient-to-br from-blue-600 to-blue-700 
+                     text-white text-xl font-bold shadow-md 
+                     hover:scale-110 transition"
+        >
+          ℹ️
+        </button>
+      </div>
+
       {/* Tabs */}
       <div className="flex gap-4">
         <button
@@ -124,8 +106,6 @@ export default function AdmitCard() {
           <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-xl border dark:border-gray-700 px-10 py-10">
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              
-              {/* Exam Type */}
               <select
                 className="border rounded-lg px-3 py-3 bg-white dark:bg-gray-800 
                            text-black dark:text-white border-gray-300 dark:border-gray-600"
@@ -138,7 +118,6 @@ export default function AdmitCard() {
                 <option>Final Exam</option>
               </select>
 
-              {/* Sub Exam */}
               <select
                 className="border rounded-lg px-3 py-3 bg-white dark:bg-gray-800 
                            text-black dark:text-white border-gray-300 dark:border-gray-600"
@@ -150,7 +129,6 @@ export default function AdmitCard() {
                 <option>Part B</option>
               </select>
 
-              {/* Session */}
               <select
                 className="border rounded-lg px-3 py-3 bg-white dark:bg-gray-800 
                            text-black dark:text-white border-gray-300 dark:border-gray-600"
@@ -164,8 +142,6 @@ export default function AdmitCard() {
 
             {/* COURSE & BATCH */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-
-              {/* Course */}
               <select
                 className="border rounded-lg px-3 py-3 bg-white dark:bg-gray-800 
                            text-black dark:text-white border-gray-300 dark:border-gray-600"
@@ -178,7 +154,6 @@ export default function AdmitCard() {
                 <option>MTech</option>
               </select>
 
-              {/* Batch */}
               <select
                 className="border rounded-lg px-3 py-3 bg-white dark:bg-gray-800 
                            text-black dark:text-white border-gray-300 dark:border-gray-600"
@@ -190,7 +165,6 @@ export default function AdmitCard() {
                 <option>Batch B</option>
                 <option>Batch C</option>
               </select>
-
             </div>
 
             <div className="flex justify-center mt-10">
@@ -305,7 +279,7 @@ export default function AdmitCard() {
             </select>
           </div>
 
-          {/* SUBJECT AREA */}
+          {/* SUBJECTS */}
           <h3 className="font-semibold text-lg mt-10 mb-3">Add Subject Details</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -382,7 +356,47 @@ export default function AdmitCard() {
 
         </div>
       )}
+
+      {/* ⭐ HELP MODAL */}
+      {openInfo && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center">
+
+          <div className="bg-white dark:bg-[#140028] rounded-2xl shadow-2xl 
+                          w-[90%] max-w-lg p-6 border dark:border-gray-700 animate-modalSlideUp">
+
+            <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-300 mb-4">
+              How to Use Admit Card Module
+            </h1>
+
+            <div className="space-y-3 text-gray-700 dark:text-gray-300">
+
+              <p>This module helps to generate & view admit cards for students.</p>
+
+              <p><b>1️⃣ Select Exam Type</b> → Choose Unit Test, Half Yearly, etc.</p>
+              <p><b>2️⃣ Select Sub Exam</b> → Part A / Part B.</p>
+              <p><b>3️⃣ Select Session</b> → 2025-26.</p>
+              <p><b>4️⃣ Choose Course & Batch</b> → Filter correct students.</p>
+              <p><b>5️⃣ Click “GET ADMIT DETAILS”</b> → Students list will load.</p>
+              <p><b>6️⃣ Create Tab</b> → Add subjects with date & time.</p>
+              <p><b>7️⃣ Save</b> → Your admit timetable gets created.</p>
+
+            </div>
+
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setOpenInfo(false)}
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 
+                           text-white rounded-xl shadow-md"
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 }
-

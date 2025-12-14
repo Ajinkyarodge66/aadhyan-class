@@ -22,6 +22,9 @@ export default function AttendanceOverview() {
   const [presentTotal, setPresentTotal] = useState(0);
   const [absentTotal, setAbsentTotal] = useState(0);
 
+  // ⭐ Modal State
+  const [openInfo, setOpenInfo] = useState(false);
+
   // ⭐ REAL-TIME DARK MODE DETECTION  
   const [isDark, setIsDark] = useState(
     document.documentElement.classList.contains("dark")
@@ -109,6 +112,19 @@ export default function AttendanceOverview() {
   return (
     <div className="p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-xl shadow">
 
+      {/* ===== TOP RIGHT INFO BUTTON ===== */}
+      <div className="flex justify-end mb-3">
+        <button
+          onClick={() => setOpenInfo(true)}
+          className="w-10 h-10 flex items-center justify-center rounded-full 
+                     bg-gradient-to-br from-indigo-600 to-indigo-700 
+                     text-white text-xl font-bold shadow-md 
+                     hover:shadow-lg hover:scale-105 transition-all duration-200"
+        >
+          ℹ️
+        </button>
+      </div>
+
       {/* FILTERS */}
       <div className="flex flex-wrap gap-4 mb-6">
         <select
@@ -164,7 +180,86 @@ export default function AttendanceOverview() {
           "Select course & batch to view attendance."
         )}
       </div>
+
+      {/* ================= INFO MODAL ================= */}
+      {openInfo && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm 
+                        flex items-center justify-center z-50 animate-backdropFade">
+
+          <div className="bg-white dark:bg-[#140028] rounded-2xl shadow-2xl 
+                          w-[90%] max-w-lg p-6 border border-gray-200 
+                          dark:border-gray-700 animate-modalSlideUp">
+
+            <h1 className="text-2xl font-bold text-indigo-700 dark:text-indigo-300 mb-4">
+              How to Use Attendance Overview
+            </h1>
+
+            <div className="space-y-4 text-gray-700 dark:text-gray-300">
+
+              <p>
+                This panel allows you to view <b>Attendance Trends</b> through charts  
+                such as Day-wise, Month-wise and Year-wise reports.
+              </p>
+
+              <div>
+                <h3 className="font-semibold text-lg text-indigo-700 dark:text-indigo-300">
+                  1️⃣ Select Course
+                </h3>
+                <p>Choose Diploma / BTech / MTech.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-lg text-indigo-700 dark:text-indigo-300">
+                  2️⃣ Select Batch
+                </h3>
+                <p>Pick Batch A, B, or C depending on class grouping.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-lg text-indigo-700 dark:text-indigo-300">
+                  3️⃣ Choose Filter Type
+                </h3>
+                <ul className="list-disc pl-6 mt-1 space-y-1">
+                  <li><b>Day Wise</b> – Daily attendance trends</li>
+                  <li><b>Month Wise</b> – Monthly total presence & absence</li>
+                  <li><b>Year Wise</b> – Yearly consolidated statistics</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-lg text-indigo-700 dark:text-indigo-300">
+                  📊 Understanding the Chart
+                </h3>
+                <ul className="list-disc pl-6 mt-1 space-y-1">
+                  <li>Green Bar → Total Present</li>
+                  <li>Red Bar → Total Absent</li>
+                  <li>Hover to see exact values</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-lg text-indigo-700 dark:text-indigo-300">
+                  📝 Data Source
+                </h3>
+                <p>All attendance data is loaded from <b>attendanceData.js</b>.</p>
+              </div>
+
+            </div>
+
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setOpenInfo(false)}
+                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 
+                           text-white rounded-xl shadow-md"
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
-

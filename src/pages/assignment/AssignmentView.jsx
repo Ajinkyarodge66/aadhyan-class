@@ -15,6 +15,8 @@ export default function AssignmentView() {
   const teachers = ["Roshni", "Amit", "Priya"];
   const assignments = ["HW 01", "Classwork 02", "Revision Test"];
 
+  const [openInfo, setOpenInfo] = useState(false); // ⭐ Info button modal
+
   // OLD BIG DATA
   const defaultStudentsData = [
     { admission: "A001", name: "Rahul Patil", branch: "CSE", course: "BTech / BE", batch: "Batch 2024", teacher: "Roshni", assignment: "HW 01", file: "file1.pdf", description: "Assignment submitted on time", roll: 12 },
@@ -46,33 +48,25 @@ export default function AssignmentView() {
     return [...defaultStudentsData, ...converted];
   };
 
-  // PAGE OPEN → show nothing
   useEffect(() => {
-    setStudents([]); // blank by default
+    setStudents([]);
   }, []);
 
-  // SHOW ALL STUDENTS
   const showAllStudents = () => {
-    const fullData = loadAllData();
-    setStudents(fullData);
+    setStudents(loadAllData());
   };
 
-  // SHOW SUBMITTED ONLY
   const showSubmittedOnly = () => {
-    const fullData = loadAllData();
-    const submitted = fullData.filter(
-      (s) => s.file && s.file !== "#" && s.file !== "-"
-    );
+    const full = loadAllData();
+    const submitted = full.filter((s) => s.file && s.file !== "#" && s.file !== "-");
     setStudents(submitted);
   };
 
-  // SAVE
   const handleSave = () => {
     localStorage.setItem("assignment_view_data", JSON.stringify(students));
     alert("Saved successfully!");
   };
 
-  // RESET
   const handleReset = () => {
     setFilter({
       teacher: "",
@@ -81,11 +75,24 @@ export default function AssignmentView() {
       branch: "",
       assignment: "",
     });
-    setStudents([]); // clear table
+    setStudents([]);
   };
 
   return (
     <div className="p-6 min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+
+      {/* ⭐ TOP RIGHT INFO BUTTON */}
+      <div className="flex justify-end mb-2">
+        <button
+          onClick={() => setOpenInfo(true)}
+          className="w-10 h-10 flex items-center justify-center rounded-full 
+                     bg-gradient-to-br from-teal-600 to-teal-700 
+                     text-white text-xl font-bold shadow-md 
+                     hover:shadow-lg hover:scale-105 transition"
+        >
+          ℹ️
+        </button>
+      </div>
 
       <h2 className="text-3xl font-semibold text-center mb-8">
         View Assignments
@@ -201,6 +208,69 @@ export default function AssignmentView() {
           </button>
         </div>
       </div>
+
+      {/* ⭐ HELP MODAL (i-button) */}
+      {openInfo && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 
+                        flex items-center justify-center animate-backdropFade">
+
+          <div className="bg-white dark:bg-[#140028] rounded-2xl shadow-2xl 
+                          w-[90%] max-w-lg p-6 border dark:border-gray-700 animate-modalSlideUp">
+
+            <h1 className="text-2xl font-bold text-teal-700 dark:text-teal-300 mb-4">
+              How to Use Assignment Viewer
+            </h1>
+
+            <div className="space-y-4 text-gray-700 dark:text-gray-300">
+
+              <p>This module allows teachers/admin to view, filter, and analyze assignment submissions.</p>
+
+              <div>
+                <h3 className="font-semibold">1️⃣ Apply Filters</h3>
+                <ul className="list-disc pl-5">
+                  <li>Select Teacher</li>
+                  <li>Select Course & Branch</li>
+                  <li>Select Batch</li>
+                  <li>Select Assignment</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">2️⃣ Show All Students</h3>
+                <p>Displays all assignment entries stored in the system.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">3️⃣ Show Submitted Only</h3>
+                <p>Shows only students who uploaded a file.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">4️⃣ Save View</h3>
+                <p>Saves current filtered table into localStorage.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">5️⃣ Reset</h3>
+                <p>Clears filters and hides the table.</p>
+              </div>
+
+            </div>
+
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setOpenInfo(false)}
+                className="px-6 py-2 bg-teal-600 hover:bg-teal-700 
+                           text-white rounded-xl shadow-md"
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      )}
 
     </div>
   );

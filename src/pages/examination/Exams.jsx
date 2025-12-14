@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 export default function Exams() {
-  // ENGINEERING EXAM TYPES
   const examTypes = ["Unit Test", "Mid Term", "Final Exam", "Practical Exam"];
   const subExams = ["Part A", "Part B", "Oral Test", "Viva", "Practical"];
   const teachers = [
@@ -12,17 +11,10 @@ export default function Exams() {
     "Prof. Neha Shah (ENTC)"
   ];
 
-  // COURSE OPTIONS
   const courses = ["Diploma", "BTech / BE", "MTech"];
 
-  // DYNAMIC BRANCH OPTIONS BASED ON COURSE
   const branchOptions = {
-    Diploma: [
-      "Computer Engineering",
-      "Mechanical Engineering",
-      "Electrical Engineering",
-      "Civil Engineering"
-    ],
+    Diploma: ["Computer Engineering","Mechanical Engineering","Electrical Engineering","Civil Engineering"],
     "BTech / BE": [
       "Computer Science & Engineering (CSE)",
       "Mechanical Engineering",
@@ -39,10 +31,8 @@ export default function Exams() {
     ]
   };
 
-  // Batches
   const batches = ["Batch A", "Batch B", "Batch C"];
 
-  // STATE MANAGEMENT
   const [filters, setFilters] = useState({
     examType: "",
     subExam: "",
@@ -52,10 +42,11 @@ export default function Exams() {
     branch: ""
   });
 
+  const [openInfo, setOpenInfo] = useState(false); // ⭐ i-button help modal
+
   const [students, setStudents] = useState([]);
   const [showTable, setShowTable] = useState(false);
 
-  // ENGINEERING STUDENTS DATA (LARGE DATASET)
   const dummyStudents = [
     { id: 1, roll: 101, name: "Rohan Patil", admissionNo: "CE101" },
     { id: 2, roll: 102, name: "Sneha Desai", admissionNo: "CE102" },
@@ -66,20 +57,9 @@ export default function Exams() {
     { id: 7, roll: 107, name: "Rutuja Sawant", admissionNo: "CSE302" },
     { id: 8, roll: 108, name: "Akash More", admissionNo: "EE401" },
     { id: 9, roll: 109, name: "Meera Joshi", admissionNo: "EE402" },
-    { id: 10, roll: 110, name: "Sahil Kadam", admissionNo: "CE501" },
-    { id: 11, roll: 111, name: "Nikita Pawar", admissionNo: "CE502" },
-    { id: 12, roll: 112, name: "Aman Singh", admissionNo: "ENTC601" },
-    { id: 13, roll: 113, name: "Komal Sutar", admissionNo: "ENTC602" },
-    { id: 14, roll: 114, name: "Soham Parab", admissionNo: "IT701" },
-    { id: 15, roll: 115, name: "Tanvi Mule", admissionNo: "IT702" },
-    { id: 16, roll: 116, name: "Yash Khot", admissionNo: "ME203" },
-    { id: 17, roll: 117, name: "Hrishikesh Mane", admissionNo: "CSE303" },
-    { id: 18, roll: 118, name: "Rajveer Patil", admissionNo: "CSE304" },
-    { id: 19, roll: 119, name: "Saniya Mulla", admissionNo: "EE403" },
-    { id: 20, roll: 120, name: "Anushka Pawar", admissionNo: "CE503" }
+    { id: 10, roll: 110, name: "Sahil Kadam", admissionNo: "CE501" }
   ];
 
-  // HANDLE FIELD UPDATE
   const updateField = (field, value) => {
     setFilters({ ...filters, [field]: value });
 
@@ -88,7 +68,6 @@ export default function Exams() {
     }
   };
 
-  // GET STUDENT LIST
   const getStudents = () => {
     const { examType, subExam, teacher, course, batch, branch } = filters;
 
@@ -101,7 +80,6 @@ export default function Exams() {
     setShowTable(true);
   };
 
-  // RESET FORM
   const resetForm = () => {
     setFilters({
       examType: "",
@@ -118,13 +96,25 @@ export default function Exams() {
   return (
     <div className="p-6 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
 
+      {/* ⭐ TOP RIGHT i-button */}
+      <div className="flex justify-end mb-3">
+        <button
+          onClick={() => setOpenInfo(true)}
+          className="w-10 h-10 flex items-center justify-center rounded-full 
+                     bg-gradient-to-br from-emerald-600 to-emerald-700 
+                     text-white text-xl font-bold shadow-md 
+                     hover:shadow-lg hover:scale-105 transition"
+        >
+          ℹ️
+        </button>
+      </div>
+
       <h2 className="text-4xl font-bold text-center mb-10 text-teal-700 dark:text-teal-400">
         Examination Details
       </h2>
 
       <div className="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-xl max-w-6xl mx-auto border border-slate-300 dark:border-slate-700">
 
-        {/* FORM GRID */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           <Dropdown label="Exam Type" value={filters.examType} options={examTypes}
@@ -139,7 +129,6 @@ export default function Exams() {
           <Dropdown label="Course" value={filters.course} options={courses}
             onChange={(v) => updateField("course", v)} />
 
-          {/* DYNAMIC BRANCH DROPDOWN */}
           <Dropdown
             label="Branch"
             value={filters.branch}
@@ -151,7 +140,6 @@ export default function Exams() {
             onChange={(v) => updateField("batch", v)} />
         </div>
 
-        {/* BUTTONS */}
         <div className="mt-8 flex gap-4 justify-center">
           <button
             onClick={getStudents}
@@ -169,7 +157,6 @@ export default function Exams() {
         </div>
       </div>
 
-      {/* STUDENT TABLE */}
       {showTable && (
         <div className="mt-10 max-w-6xl mx-auto bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 shadow-lg p-6 rounded-xl">
           <h3 className="text-2xl font-bold mb-4 text-center">Student List</h3>
@@ -182,6 +169,7 @@ export default function Exams() {
                 <th className="p-3">Admission No</th>
               </tr>
             </thead>
+
             <tbody>
               {students.map((s) => (
                 <tr key={s.id} className="border-b border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -195,6 +183,64 @@ export default function Exams() {
         </div>
       )}
 
+      {/* ⭐ HELP MODAL */}
+      {openInfo && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 
+                        flex items-center justify-center animate-backdropFade">
+
+          <div className="bg-white dark:bg-[#140028] rounded-2xl shadow-2xl 
+                          w-[90%] max-w-lg p-6 border dark:border-gray-700 animate-modalSlideUp">
+
+            <h1 className="text-2xl font-bold text-emerald-700 dark:text-emerald-300 mb-4">
+              How to Use Examination Module
+            </h1>
+
+            <div className="space-y-4 text-gray-700 dark:text-gray-300">
+
+              <p>This module helps teachers/admin to manage exam-related student lists.</p>
+
+              <div>
+                <h3 className="font-semibold">1️⃣ Choose Exam Details</h3>
+                <p>Select Exam Type, Sub Exam, Teacher and Course.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">2️⃣ Select Branch Based on Course</h3>
+                <p>Branch options change automatically based on selected course.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">3️⃣ Select Batch</h3>
+                <p>Choose Batch A / B / C.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">4️⃣ Get Student List</h3>
+                <p>Click GET STUDENTS to load all assigned students.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">5️⃣ Reset Form</h3>
+                <p>Click RESET to clear everything.</p>
+              </div>
+
+            </div>
+
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setOpenInfo(false)}
+                className="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 
+                           text-white rounded-xl shadow-md"
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 }
@@ -204,7 +250,8 @@ function Dropdown({ label, value, options, onChange }) {
     <div>
       <label className="font-semibold text-slate-800 dark:text-slate-200">{label}:</label>
       <select
-        className="w-full mt-1 px-4 py-2 rounded-lg border bg-white dark:bg-slate-800 text-slate-900 dark:text-white border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-500"
+        className="w-full mt-1 px-4 py-2 rounded-lg border bg-white dark:bg-slate-800 
+                   text-slate-900 dark:text-white border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-500"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >

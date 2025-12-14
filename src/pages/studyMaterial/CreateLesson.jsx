@@ -11,6 +11,8 @@ export default function CreateLesson() {
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
 
+  const [openInfo, setOpenInfo] = useState(false); // ⭐ i-button help modal
+
   const [active, setActive] = useState({
     id: null,
     course: "",
@@ -59,6 +61,19 @@ export default function CreateLesson() {
 
   return (
     <div className="p-6 text-black dark:text-white">
+
+      {/* ⭐ TOP RIGHT INFO BUTTON */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={() => setOpenInfo(true)}
+          className="w-10 h-10 flex items-center justify-center rounded-full 
+                     bg-gradient-to-br from-indigo-600 to-indigo-700 
+                     text-white text-xl font-bold shadow-md 
+                     hover:shadow-lg hover:scale-105 transition"
+        >
+          ℹ️
+        </button>
+      </div>
 
       {/* TOP BAR */}
       <div className="flex justify-between items-center mb-6">
@@ -168,8 +183,8 @@ export default function CreateLesson() {
 
       {/* ADD / EDIT MODAL */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-          <div className="bg-white dark:bg-gray-900 w-[550px] p-6 rounded-xl shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 animate-backdropFade">
+          <div className="bg-white dark:bg-gray-900 w-[550px] p-6 rounded-xl shadow-xl animate-modalSlideUp">
 
             <h1 className="text-2xl font-bold text-center mb-4">
               {active.id ? "Edit Lesson" : "Add Lesson"}
@@ -231,8 +246,8 @@ export default function CreateLesson() {
 
       {/* DELETE MODAL */}
       {deleteModal && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-xl w-[350px]">
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 animate-backdropFade">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-xl w-[350px] animate-modalSlideUp">
             <h2 className="text-xl font-semibold mb-4 text-center">
               Delete this lesson?
             </h2>
@@ -253,6 +268,65 @@ export default function CreateLesson() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ⭐ HOW TO USE INFO MODAL */}
+      {openInfo && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-backdropFade">
+
+          <div className="bg-white dark:bg-[#140028] rounded-2xl shadow-2xl 
+                          w-[90%] max-w-lg p-6 border dark:border-gray-700 animate-modalSlideUp">
+
+            <h1 className="text-2xl font-bold text-indigo-700 dark:text-indigo-300 mb-4">
+              How to Use Lesson Creator
+            </h1>
+
+            <div className="space-y-4 text-gray-700 dark:text-gray-300">
+
+              <p>
+                This panel helps you create, edit and delete lessons for different courses & branches.
+              </p>
+
+              <div>
+                <h3 className="font-semibold">1️⃣ Add Lesson</h3>
+                <p>Click <b>ADD LESSON</b> and fill Course, Branch, Name & Content.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">2️⃣ Edit Lesson</h3>
+                <p>Use ✏ Edit button to change details of an existing lesson.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">3️⃣ Delete Lesson</h3>
+                <p>Click 🗑 Delete to remove a lesson permanently.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">4️⃣ Search Feature</h3>
+                <p>Search lessons instantly by name, course, or branch.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">📁 Lesson Data</h3>
+                <p>All lesson information is stored locally but can be shifted to backend easily.</p>
+              </div>
+
+            </div>
+
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setOpenInfo(false)}
+                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 
+                           text-white rounded-xl shadow-md"
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+
         </div>
       )}
 

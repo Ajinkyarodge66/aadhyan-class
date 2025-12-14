@@ -30,7 +30,9 @@ export default function CreateTimetable() {
   const [rows, setRows] = useState([]);
   const [show, setShow] = useState(false);
 
-  // SHOW TIMETABLE CLICK
+  const [openInfo, setOpenInfo] = useState(false); // MODAL STATE
+
+  // SHOW TIMETABLE
   const handleShow = () => {
     if (!selectedCourse || !selectedBranch || !selectedBatch) {
       alert("Please select Course, Branch and Batch");
@@ -42,7 +44,7 @@ export default function CreateTimetable() {
     setShow(true);
   };
 
-  // get subject for time + day
+  // Get subject
   const getSubject = (start, day) => {
     const row = rows.find((r) => r.start === start);
     return row ? row[day] || "-" : "-";
@@ -50,6 +52,19 @@ export default function CreateTimetable() {
 
   return (
     <div className="flex flex-col gap-6 p-6 rounded-xl bg-white dark:bg-[#0F0020]">
+
+      {/* ===== TOP RIGHT INFO BUTTON ===== */}
+      <div className="flex justify-end">
+        <button
+          onClick={() => setOpenInfo(true)}
+          className="w-10 h-10 flex items-center justify-center rounded-full 
+                     bg-gradient-to-br from-teal-600 to-teal-700 
+                     text-white text-xl font-bold shadow-md 
+                     hover:shadow-lg hover:scale-105 transition-all duration-200"
+        >
+          ℹ️
+        </button>
+      </div>
 
       {/* ================= FILTERS ================= */}
       <div className="flex flex-col md:flex-row gap-4 justify-center">
@@ -95,7 +110,7 @@ export default function CreateTimetable() {
         </button>
       </div>
 
-      {/* ================= MESSAGE BEFORE SHOW ================= */}
+      {/* ================= BEFORE SHOW MESSAGE ================= */}
       {!show && (
         <div className="text-center mt-8 text-gray-500 italic">
           Please select <b>Course</b>, <b>Branch</b> and <b>Batch</b> and click{" "}
@@ -137,8 +152,8 @@ export default function CreateTimetable() {
                       {slot.label === "Lunch"
                         ? "🍽 Lunch"
                         : slot.label === "Break"
-                        ? "☕ Break"
-                        : getSubject(slot.start, day)}
+                          ? "☕ Break"
+                          : getSubject(slot.start, day)}
                     </td>
                   ))}
                 </tr>
@@ -147,7 +162,79 @@ export default function CreateTimetable() {
           </table>
         </div>
       )}
+
+      {/* ================= INFO MODAL ================= */}
+      {openInfo && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm 
+                        flex items-center justify-center z-50 animate-backdropFade">
+
+          <div className="bg-white dark:bg-[#140028] rounded-2xl shadow-2xl 
+                          w-[90%] max-w-lg p-6 border border-gray-200 
+                          dark:border-gray-700 animate-modalSlideUp">
+
+            <h1 className="text-2xl font-bold text-teal-700 dark:text-teal-300 mb-4">
+              How to Use Timetable Panel
+            </h1>
+
+            <div className="space-y-4 text-gray-700 dark:text-gray-300">
+
+              <p>
+                This panel helps you generate a timetable based on selected 
+                <b> Course</b>, <b> Branch</b>, and <b> Batch</b>.
+              </p>
+
+              <div>
+                <h3 className="font-semibold text-lg text-teal-700 dark:text-teal-300">1️⃣ Select Course</h3>
+                <p>Choose Diploma / BTech / MTech.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-lg text-teal-700 dark:text-teal-300">2️⃣ Select Branch</h3>
+                <p>Choose CSE, ME, CE or any department.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-lg text-teal-700 dark:text-teal-300">3️⃣ Select Batch</h3>
+                <p>Select Batch 2024, Batch 2025, Morning or Evening.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-lg text-teal-700 dark:text-teal-300">4️⃣ Click "SHOW TIMETABLE"</h3>
+                <p>Timetable will appear with all weekday periods.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-lg text-teal-700 dark:text-teal-300">📘 Understanding Periods</h3>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>P1 starts at 08:00 AM</li>
+                  <li>Break & Lunch auto-highlighted</li>
+                  <li>P7–P10 afternoon periods</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-lg text-teal-700 dark:text-teal-300">📝 Editing Timetable</h3>
+                <p>Admin can update timetable inside <b>timetableData</b>.</p>
+              </div>
+
+            </div>
+
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setOpenInfo(false)}
+                className="px-6 py-2 bg-teal-600 hover:bg-teal-700 
+                           text-white rounded-xl shadow-md"
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
+
 

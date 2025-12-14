@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Notifications from "./Notifications";
 
 export default function Settings() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("profile");
+
+  // ⭐ HELP MODAL STATE
+  const [openInfo, setOpenInfo] = useState(false);
 
   // ---------------- PROFILE STATE ----------------
   const [profile, setProfile] = useState({ name: "", email: "", phone: "" });
@@ -56,137 +60,182 @@ export default function Settings() {
   };
 
   return (
-    <div className="p-6 dark:text-white">
+    <>
+      {/* MAIN SETTINGS WRAPPER */}
+      <div className="p-6 dark:text-white relative">
 
-      <h1 className="text-4xl font-bold mb-6">Settings</h1>
+        {/* ⭐ TOP-RIGHT INFO BUTTON */}
+        <button
+          onClick={() => setOpenInfo(true)}
+          className="
+            absolute right-4 top-4 
+            w-10 h-10 flex items-center justify-center 
+            rounded-full text-lg font-bold
+            bg-gradient-to-br from-blue-600 to-blue-700
+            text-white shadow hover:scale-110 transition
+          "
+        >
+          ℹ️
+        </button>
 
-      {/* ------- TAB BUTTONS ------- */}
-      <div className="flex gap-4 mb-8">
-        <TabButton id="profile" activeTab={activeTab} setActiveTab={setActiveTab} label="Profile Settings" />
-        <TabButton id="password" activeTab={activeTab} setActiveTab={setActiveTab} label="Change Password" />
-        <TabButton id="theme" activeTab={activeTab} setActiveTab={setActiveTab} label="Theme" />
-        <TabButton id="notifications" activeTab={activeTab} setActiveTab={setActiveTab} label="Notifications" />
-        <TabButton id="logout" activeTab={activeTab} setActiveTab={setActiveTab} label="Logout" />
-      </div>
+        <h1 className="text-4xl font-bold mb-6">Settings</h1>
 
-      {/* ------- TAB CONTENT ------- */}
-      <div className="bg-white dark:bg-[#1e1e1e] shadow-xl p-8 rounded-2xl">
+        {/* ------- TAB BUTTONS ------- */}
+        <div className="flex gap-4 mb-8">
+          <TabButton id="profile" activeTab={activeTab} setActiveTab={setActiveTab} label="Profile Settings" />
+          <TabButton id="password" activeTab={activeTab} setActiveTab={setActiveTab} label="Change Password" />
+          <TabButton id="theme" activeTab={activeTab} setActiveTab={setActiveTab} label="Theme" />
+          <TabButton id="notifications" activeTab={activeTab} setActiveTab={setActiveTab} label="Notifications" />
+          <TabButton id="logout" activeTab={activeTab} setActiveTab={setActiveTab} label="Logout" />
+        </div>
 
-        {/* PROFILE TAB */}
-        {activeTab === "profile" && (
-          <div>
-            <h2 className="text-2xl font-semibold mb-4 dark:text-white">Profile Information</h2>
+        {/* ------- TAB CONTENT ------- */}
+        <div className="bg-white dark:bg-[#1e1e1e] shadow-xl p-8 rounded-2xl">
 
-            <div className="space-y-5">
-              <div>
-                <label className="font-medium">Full Name</label>
-                <input
-                  type="text"
-                  value={profile.name}
-                  onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                  placeholder="Enter your name"
-                  className="w-full mt-1 p-3 border rounded-lg dark:bg-[#333] dark:text-white dark:border-gray-600"
-                />
+          {/* PROFILE TAB */}
+          {activeTab === "profile" && (
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 dark:text-white">Profile Information</h2>
+
+              <div className="space-y-5">
+                <div>
+                  <label className="font-medium">Full Name</label>
+                  <input
+                    type="text"
+                    value={profile.name}
+                    onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                    placeholder="Enter your name"
+                    className="w-full mt-1 p-3 border rounded-lg dark:bg-[#333] dark:text-white dark:border-gray-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-medium">Email</label>
+                  <input
+                    type="email"
+                    value={profile.email}
+                    onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                    placeholder="Enter email address"
+                    className="w-full mt-1 p-3 border rounded-lg dark:bg-[#333] dark:text-white dark:border-gray-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-medium">Phone</label>
+                  <input
+                    type="text"
+                    value={profile.phone}
+                    onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                    placeholder="Enter phone number"
+                    className="w-full mt-1 p-3 border rounded-lg dark:bg-[#333] dark:text-white dark:border-gray-600"
+                  />
+                </div>
+
+                <button onClick={handleProfileSave} className="px-6 py-3 bg-blue-600 text-white rounded-lg">
+                  Save Changes
+                </button>
               </div>
+            </div>
+          )}
 
-              <div>
-                <label className="font-medium">Email</label>
-                <input
-                  type="email"
-                  value={profile.email}
-                  onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                  placeholder="Enter email address"
-                  className="w-full mt-1 p-3 border rounded-lg dark:bg-[#333] dark:text-white dark:border-gray-600"
+          {/* PASSWORD TAB */}
+          {activeTab === "password" && (
+            <div>
+              <h2 className="text-2xl font-semibold mb-6 dark:text-white">Change Password</h2>
+
+              <div className="space-y-5">
+                <input type="password" placeholder="Current Password"
+                  value={passwords.current}
+                  onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
+                  className="w-full p-3 border rounded-lg dark:bg-[#333] dark:text-white dark:border-gray-600"
                 />
-              </div>
 
-              <div>
-                <label className="font-medium">Phone</label>
-                <input
-                  type="text"
-                  value={profile.phone}
-                  onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                  placeholder="Enter phone number"
-                  className="w-full mt-1 p-3 border rounded-lg dark:bg-[#333] dark:text-white dark:border-gray-600"
+                <input type="password" placeholder="New Password"
+                  value={passwords.newPass}
+                  onChange={(e) => setPasswords({ ...passwords, newPass: e.target.value })}
+                  className="w-full p-3 border rounded-lg dark:bg-[#333] dark:text-white dark:border-gray-600"
                 />
-              </div>
 
-              <button onClick={handleProfileSave} className="px-6 py-3 bg-blue-600 text-white rounded-lg">
-                Save Changes
+                <input type="password" placeholder="Confirm New Password"
+                  value={passwords.confirm}
+                  onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
+                  className="w-full p-3 border rounded-lg dark:bg-[#333] dark:text-white dark:border-gray-600"
+                />
+
+                <button onClick={handlePasswordUpdate} className="px-6 py-3 bg-blue-600 text-white rounded-lg">
+                  Update Password
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* THEME TAB */}
+          {activeTab === "theme" && (
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 dark:text-white">Theme</h2>
+
+              <button
+                onClick={toggleTheme}
+                className="px-6 py-3 bg-gray-800 text-white rounded-lg dark:bg-yellow-400 dark:text-black"
+              >
+                Toggle Dark / Light Mode
               </button>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* PASSWORD TAB */}
-        {activeTab === "password" && (
-          <div>
-            <h2 className="text-2xl font-semibold mb-6 dark:text-white">Change Password</h2>
+          {/* NOTIFICATIONS */}
+          {activeTab === "notifications" && (
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 dark:text-white">Notifications</h2>
+              <p className="text-gray-600 dark:text-gray-300">Notification settings coming soon…</p>
+            </div>
+          )}
 
-            <div className="space-y-5">
-              <input type="password" placeholder="Current Password"
-                value={passwords.current}
-                onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
-                className="w-full p-3 border rounded-lg dark:bg-[#333] dark:text-white dark:border-gray-600"
-              />
+          {/* LOGOUT */}
+          {activeTab === "logout" && (
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 dark:text-white">Logout</h2>
 
-              <input type="password" placeholder="New Password"
-                value={passwords.newPass}
-                onChange={(e) => setPasswords({ ...passwords, newPass: e.target.value })}
-                className="w-full p-3 border rounded-lg dark:bg-[#333] dark:text-white dark:border-gray-600"
-              />
-
-              <input type="password" placeholder="Confirm New Password"
-                value={passwords.confirm}
-                onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
-                className="w-full p-3 border rounded-lg dark:bg-[#333] dark:text-white dark:border-gray-600"
-              />
-
-              <button onClick={handlePasswordUpdate} className="px-6 py-3 bg-blue-600 text-white rounded-lg">
-                Update Password
+              <button
+                onClick={handleLogout}
+                className="px-6 py-3 bg-red-600 text-white rounded-lg"
+              >
+                Logout Now
               </button>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* THEME TAB */}
-        {activeTab === "theme" && (
-          <div>
-            <h2 className="text-2xl font-semibold mb-4 dark:text-white">Theme</h2>
-
-            <button
-              onClick={toggleTheme}
-              className="px-6 py-3 bg-gray-800 text-white rounded-lg dark:bg-yellow-400 dark:text-black"
-            >
-              Toggle Dark / Light Mode
-            </button>
-          </div>
-        )}
-
-        {/* NOTIFICATIONS */}
-        {activeTab === "notifications" && (
-          <div>
-            <h2 className="text-2xl font-semibold mb-4 dark:text-white">Notifications</h2>
-            <p className="text-gray-600 dark:text-gray-300">Notification settings coming soon…</p>
-          </div>
-        )}
-
-        {/* LOGOUT */}
-        {activeTab === "logout" && (
-          <div>
-            <h2 className="text-2xl font-semibold mb-4 dark:text-white">Logout</h2>
-
-            <button
-              onClick={handleLogout}
-              className="px-6 py-3 bg-red-600 text-white rounded-lg"
-            >
-              Logout Now
-            </button>
-          </div>
-        )}
-
+        </div>
       </div>
-    </div>
+
+      {/* ⭐ HELP MODAL */}
+      {openInfo && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center">
+          <div className="bg-white dark:bg-[#140028] w-[90%] max-w-md p-6 rounded-2xl shadow-xl border dark:border-gray-700 animate-modalSlideUp">
+
+            <h2 className="text-2xl font-bold text-blue-600 dark:text-blue-300 mb-4">
+              How to Use Settings Module
+            </h2>
+
+            <ul className="space-y-2 text-gray-700 dark:text-gray-300 text-sm">
+              <li>⚙️ <b>Profile Settings</b>: Update your name, email & phone.</li>
+              <li>🔐 <b>Change Password</b>: Update your login password securely.</li>
+              <li>🌙 <b>Theme</b>: Toggle between Light & Dark mode.</li>
+              <li>🔔 <b>Notifications</b>: Enable/Disable system alerts.</li>
+              <li>🚪 <b>Logout</b>: Safely log out from your account.</li>
+            </ul>
+
+            <button
+              onClick={() => setOpenInfo(false)}
+              className="mt-5 w-full bg-blue-600 hover:bg-blue-700 
+                         text-white py-2 rounded-lg"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
